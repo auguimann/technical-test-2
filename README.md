@@ -1,43 +1,12 @@
-# Technical test
+So i found several bugs in the app...
 
-## Introduction
+- First of all, when creating an user using the "Create user" button (not the sign up one), there was no explanation on what field was wrong. Not so user friendly.
+I fixed it by adding ERRORS_CONSTS and then throwing the good message in a toast to the user. Also added some regex checking for the email format. I didn't implement any security features like countering SQL Injections or XSS since there was no database and it was not really important in the case of the test (but i thought about doing it, just so you know !)
 
-Fabien just came back from a meeting with an incubator and told them we have a platform “up and running” to monitor people's activities and control the budget for their startups !
+- Then, when creating an user with the good attributes, the username wasn't displaying correctly in the corresponding field. That is because the POST form when creating an user was sending the attribute "username" to the "database" creation but the field that the app was trying to read is only "name". I fixed it by changing "name" to "username"
 
-All others developers are busy and we need you to deliver the app for tomorrow.
-Some bugs are left and we need you to fix those. Don't spend to much time on it.
+- The update button wasn't working because the "onClick" attribute to submit the form was "onChange", i fixed it and then it worked.
 
-We need you to follow these steps to understand the app and to fix the bug : 
- - Sign up to the app
- - Create at least 2 others users on people page ( not with signup ) 
- - Edit these profiles and add aditional information 
- - Create a project
- - Input some information about the project
- - Input some activities to track your work in the good project
-  
-Then, see what happens in the app and fix the bug you found doing that.
+- Finally, when consulting a project, there was an error when trying to read any attributes of the object project. That was becasue the project object was in an array, to access it, we had to change it by passing project[0] to the View (this is not a real solution as mentionned in the comments but i had no more time to implement it correctly)
 
-## Then
-Time to be creative, and efficient. Do what you think would be the best for your product under a short period.
-
-### The goal is to fix at least 3 bugs and implement 1 quick win feature than could help us sell the platform
-
-## Setup api
-
-- cd api
-- Run `npm i`
-- Run `npm run dev`
-
-## Setup app
-
-- cd app
-- Run `npm i`
-- Run `npm run dev`
-
-## Finally
-
-Send us the project and answer to those simple questions : 
-- What bugs did you find ? How did you solve these and why ? 
-- Which feature did you develop and why ? 
-- Do you have any feedback about the code / architecture of the project and what was the difficulty you encountered while doing it ? 
-
+If I forgot to comment some other fixed bugs, just check the files I edited, I should have sufficiently commented for you to understand what I have done :)
