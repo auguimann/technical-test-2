@@ -42,14 +42,16 @@ const Detail = ({ user }) => {
   return (
     <Formik
       initialValues={user}
-      onSubmit={async (values) => {
+      onSubmit={async (values, { setSubmitting }) => {
         try {
+          console.log('clicked');
           await api.put(`/user/${user._id}`, values);
           toast.success("Updated!");
         } catch (e) {
           console.log(e);
           toast.error("Some Error!");
         }
+        setSubmitting(false)
       }}>
       {({ values, handleChange, handleSubmit, isSubmitting }) => {
         return (
@@ -60,8 +62,8 @@ const Detail = ({ user }) => {
                 <input
                   className="projectsInput text-[14px] font-normal text-[#212325] bg-[#F9FBFD] rounded-[10px]"
                   name="name"
-                  disabled
-                  value={values.name}
+                  disabled // <-- is that normal ? I don't touch it 
+                  value={values.username} //fixed this to show username in associated field (also fixed in the back side (api) ())
                   onChange={handleChange}
                 />
               </div>
@@ -132,7 +134,7 @@ const Detail = ({ user }) => {
             </div>
 
             <div className="flex  mt-2">
-              <LoadingButton className="bg-[#0560FD] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]" loading={isSubmitting} onChange={handleSubmit}>
+              <LoadingButton className="bg-[#0560FD] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]" loading={isSubmitting} /*onChange={handleSubmit} not onChange here !! thats why the button wasn't working...*/ onClick={handleSubmit}>
                 Update
               </LoadingButton>
               <button className="ml-[10px] bg-[#F43F5E] text-[16px] font-medium text-[#FFFFFF] py-[12px] px-[22px] rounded-[10px]" onClick={deleteData}>

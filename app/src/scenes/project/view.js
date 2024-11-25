@@ -52,15 +52,14 @@ export default function ProjectView() {
               </button>
             </div>
           </div>
-          <ProjectDetails project={project} />
+          <ProjectDetails project={project[0]} /> {/* also not an actual reliable solution but at least it shows the good info (we have to standardize props) */}
         </div>
       </div>
     </React.Fragment>
   );
 }
 
-const ProjectDetails = ({ project }) => {
-  console.log(project);
+const ProjectDetails = ({project}) => {
   return (
     <div>
       <div className="flex flex-wrap p-3">
@@ -69,8 +68,7 @@ const ProjectDetails = ({ project }) => {
             <div className="w-full">
               <div className="flex justify-between gap-2">
                 <div className="flex gap-20">
-                  <span className="w-fit text-[20px] text-[#0C1024] font-bold">Nom du projet : </span>
-                  <span className="w-fit text-[20px] text-[#0C1024] font-bold">{project.name.toString()}</span>
+                  <span className="w-fit text-[20px] text-[#0C1024] font-bold">Nom du projet : {project.name}</span>
                 </div>
                 <div className="flex flex-1 flex-column items-end gap-3">
                   <Links project={project} />

@@ -5,13 +5,18 @@ const router = express.Router();
 const UserObject = require("../models/user");
 const AuthObject = require("../auth");
 
-const { validatePassword } = require("../utils");
+const { validatePassword, validateEmail } = require("../utils");
 
 const UserAuth = new AuthObject(UserObject);
 
 const SERVER_ERROR = "SERVER_ERROR";
 const USER_ALREADY_REGISTERED = "USER_ALREADY_REGISTERED";
 const PASSWORD_NOT_VALIDATED = "PASSWORD_NOT_VALIDATED";
+
+//added some useful consts to handle errors
+const UNSPECFIED_USER = "UNSPECFIED_USER";
+const UNSPECIFIED_EMAIL = "UNSPECIFIED_EMAIL";
+const EMAIL_NOT_VALIDATED = "EMAIL_NOT_VALIDATED";
 
 router.post("/signin", (req, res) => UserAuth.signin(req, res));
 router.post("/logout", (req, res) => UserAuth.logout(req, res));
@@ -42,6 +47,14 @@ router.get("/:id", passport.authenticate("user", { session: false }), async (req
 
 router.post("/", passport.authenticate("user", { session: false }), async (req, res) => {
   try {
+    console.log(req.body);
+    if(!req.body.username)
+      return res.status(400).send({ ok: false, user: null, code: UNSPECFIED_USER });
+    if(!req.body.email)
+      return res.status(400).send({ ok: false, user: null, code: UNSPECIFIED_EMAIL });
+    if (!validateEmail(req.body.email)) return res.status(400).send({ ok: false, user: null, code: EMAIL_NOT_VALIDATED }); // added email validation function in utils
+    if(!req.body.password)
+      return res.status(400).send({ ok: false, user: null, code: PASSWORD_NOT_VALIDATED });
     if (!validatePassword(req.body.password)) return res.status(400).send({ ok: false, user: null, code: PASSWORD_NOT_VALIDATED });
 
     const user = await UserObject.create({ ...req.body, organisation: req.user.organisation });
@@ -67,7 +80,6 @@ router.get("/", passport.authenticate("user", { session: false }), async (req, r
 router.put("/:id", passport.authenticate("user", { session: false }), async (req, res) => {
   try {
     const obj = req.body;
-
     const user = await UserObject.findByIdAndUpdate(req.params.id, obj, { new: true });
     res.status(200).send({ ok: true, user });
   } catch (error) {

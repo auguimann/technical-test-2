@@ -111,6 +111,7 @@ const Create = () => {
                   values.status = "active";
                   values.availability = "not available";
                   values.role = "ADMIN";
+                  //error here when submitting without clicking on any of the fileds. Sends the body without the attributes and then bypasses verifications on the backend (thats not the expected behavior) //fixed in api/src/controllers/user.js
                   const res = await api.post("/user", values);
                   if (!res.ok) throw res;
                   toast.success("Created!");
@@ -118,7 +119,21 @@ const Create = () => {
                   history.push(`/user/${res.data._id}`);
                 } catch (e) {
                   console.log(e);
-                  toast.error("Some Error!", e.code);
+                  switch (e.code) {
+                    case "UNSPECFIED_USER":
+                      return toast.error("You must specify an username !");
+                    case "USER_ALREADY_REGISTERED":
+                      return toast.error("User already registered");
+                    case "UNSPECIFIED_EMAIL":
+                      return toast.error("You must specify an email !");
+                    case "EMAIL_NOT_VALIDATED":
+                      return toast.error("Email not validated");
+                    case "PASSWORD_NOT_VALIDATED":
+                      return toast.error("Password not validated");
+                    default:
+                      return toast.error("Some Error!", e.code);
+                  }
+                  //toast.error("Some Error!", e.code); here we didn't specify the error, how can the user know what's wrong ??? also fixed in api/src/controllers/user.js
                 }
                 setSubmitting(false);
               }}>
@@ -247,7 +262,7 @@ const UserCard = ({ hit, projects }) => {
       {/* infos */}
       <div className="flex flex-col flex-1 justify-between">
         <div className="flex flex-col items-center text-center my-4 space-y-1">
-          <p className="font-semibold text-lg">{hit.name}</p>
+          <p className="font-semibold text-lg">{hit.name ? hit.name : hit.username}</p> {/* not an actual solution but at least it works for the fork. IRL we have to standardize the fields to make sure every username is fetched correctly */}
         </div>
       </div>
     </div>
